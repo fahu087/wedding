@@ -1,0 +1,476 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(to bottom, #ffd6e8, #ffe6f0);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Floating Heart Background */
+.floating-heart {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: url('https://cdn-icons-png.flaticon.com/512/833/833472.png') no-repeat center;
+  background-size: cover;
+  animation: floatHearts 8s linear infinite;
+  opacity: 0.7;
+}
+
+@keyframes floatHearts {
+  0% {
+    transform: translateY(100vh) scale(0.5) rotate(0deg);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(-120vh) scale(1.2) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.heart-container {
+  position: relative;
+  width: 280px;
+  height: 260px;
+  margin-bottom: 10px;
+  z-index: 2;
+}
+
+.heart-svg {
+  width: 300px;
+  height: 300px;
+  fill: rgb(235, 106, 106);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.couple-name {
+  position: absolute;
+  top: 63%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  text-align: center;
+  pointer-events: none;
+  font-family: 'Brush Script MT', cursive;
+}
+
+.couple-name .line1 {
+  font-size: 42px;
+  font-weight: bold;
+  transform: translate(-80px, -70px);
+}
+
+.couple-name .line2 {
+  font-size: 42px;
+  font-weight: bold;
+  transform: translate(0px, -55px);
+}
+
+.couple-name .line3 {
+  font-size: 38px;
+  font-weight: bold;
+  transform: translate(38px, -40px);
+}
+
+
+h1 {
+  font-family: 'Pacifico', cursive;
+  color: deeppink;
+  font-size: 40px;
+  font-weight: normal;
+  margin: 0 0 30px 0;
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid deeppink;
+  width: 0;
+  animation:
+    typing 3s steps(20, end) forwards,
+    blink 0.6s step-end infinite;
+  animation-fill-mode: forwards;
+}
+
+/* Typing animation */
+@keyframes typing {
+  from { width: 0; }
+  to { width: 330px; } /* adjust to match your text width */
+}
+
+/* Blink cursor */
+@keyframes blink {
+  0%, 100% { border-color: transparent; }
+  50% { border-color: deeppink; }
+}
+
+/* ✅ Hide the line after typing finishes */
+h1.finished {
+  border-right: none;
+}
+
+
+
+.buttons {
+  margin-top: 10px;
+  z-index: 2;
+}
+
+button {
+  background-color: hotpink;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  padding: 10px 20px;
+  margin: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 2px 2px 5px #c52e72;
+  transition: transform 0.2s;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+#info {
+  text-align: center;
+  color: #333;
+  font-size: 18px;
+  margin-top: 10px;
+  z-index: 2;
+}
+/* .confetti {
+  position: absolute;
+  top: -10px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  opacity: 0.8;
+  animation: confettiFall 6s linear infinite;
+  z-index: 0;
+} */
+
+@keyframes confettiFall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(120vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+.hanging-flowers {
+  width: 80%;
+  max-width: 400px;
+  display: block;
+  margin: 0 auto -10px; /* overlaps slightly with the title */
+  z-index: 2;
+  position: relative;
+}
+
+.flower-decoration {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.flower-decoration svg {
+  width: 100%;
+  height: auto;
+}
+.flower-garland {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.flower-garland svg {
+  max-width: 90%;
+  height: auto;
+}
+.flower-hanging {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto 10px;
+  display: block;
+}
+.flower-hanging {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  z-index: 2;
+}
+
+.flower {
+  width: 50px;
+  animation: sway 4s ease-in-out infinite alternate;
+}
+
+@keyframes sway {
+  0% { transform: rotate(-5deg); }
+  100% { transform: rotate(5deg); }
+}
+
+
+
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to bottom, #ffd6e8, #ffb6c1);
+  font-family: 'Poppins', sans-serif;
+  position: relative;
+}
+
+/* Flower decorations */
+.flower-left,
+.flower-right {
+  position: absolute;
+  top: 0;
+  width: 140px;
+  height: auto;
+}
+
+.flower-left {
+  left: 10px;
+}
+
+.flower-right {
+  right: 10px;
+  transform: scaleX(-1);
+}
+
+/* h1 {
+  color: #e60073;
+  font-size: 2.8em;
+  margin: 10px 0;
+} */
+
+h2 {
+  font-family: 'Great Vibes', cursive;
+  font-size: 3em;
+  color: white;
+  margin: 0;
+}
+
+.heart {
+  background-color: #ff4d6d;
+  width: 240px;
+  height: 220px;
+  clip-path: path('M120 210 C10 120, 0 50, 60 30 A40 40 0 0 1 120 70 A40 40 0 0 1 180 30 C240 50, 230 120, 120 210 Z');
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+button {
+  background-color: #ff4081;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  font-size: 1em;
+  border-radius: 8px;
+  margin: 10px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background-color: #e60073;
+}
+
+.hidden {
+  display: none;
+}
+
+#floating-hearts {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.heart-shape {
+  position: absolute;
+  bottom: 0;
+  width: 16px;
+  height: 16px;
+  background: pink;
+  clip-path: path('M8 14 C-4 6, 0 -2, 8 2 C16 -2, 20 6, 8 14 Z');
+  opacity: 0.8;
+  animation: float 6s linear infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100vh) scale(1.2);
+    opacity: 0;
+  }
+}
+.flower-left,
+.flower-right {
+  position: absolute;
+  top: 0;
+  width: 150px;
+  height: auto;
+}
+
+.flower-left {
+  left: 20px;
+}
+
+.flower-right {
+  right: 20px;
+  transform: scaleX(-1);
+}
+.flower-left, .flower-right {
+  position: absolute;
+  top: 0;
+  width: 160px;
+  height: auto;
+  transform-origin: top center;
+  animation: swayFlower 6s ease-in-out infinite alternate;
+}
+
+@keyframes swayFlower {
+  0% { transform: rotate(-4deg); }
+  100% { transform: rotate(4deg); }
+}
+/* .flower-group-left, .flower-group-right {
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  z-index: 2;
+}
+
+.flower-group-left { left: 0; margin-left: 20px; }
+.flower-group-right { right: 0; margin-right: 20px; }
+
+.flower-group-left svg, .flower-group-right svg {
+  width: 100px;
+  height: auto;
+  transform-origin: top center;
+  animation: swayFlower 6s ease-in-out infinite alternate;
+}
+
+@keyframes swayFlower {
+  0% { transform: rotate(-3deg); }
+  100% { transform: rotate(3deg); }
+} */
+.flower-group-left, .flower-group-right {
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: row; 
+  align-items: flex-start;
+  gap: 15px;
+  z-index: 2;
+}
+
+.flower-group-left {
+  left: 20px;
+  justify-content: flex-start;
+}
+
+.flower-group-right {
+  right: 20px;
+  justify-content: flex-end;
+  flex-direction: row-reverse; 
+}
+
+.flower-group-left svg,
+.flower-group-right svg {
+  width: 100px;
+  height: auto;
+  transform-origin: top center;
+  animation: swayFlower 3s ease-in-out infinite alternate;
+}
+.flower-group-left svg:nth-child(1) { margin-top: 0px; }
+.flower-group-left svg:nth-child(2) { margin-top: 20px; }
+.flower-group-left svg:nth-child(3) { margin-top: 10px; }
+
+.flower-group-right svg:nth-child(1) { margin-top: 15px; }
+.flower-group-right svg:nth-child(2) { margin-top: 0px; }
+.flower-group-right svg:nth-child(3) { margin-top: 25px; }
+/* Mobile Fix */
+@media (max-width: 768px) {
+  body {
+    height: auto;
+    min-height: 100vh;
+    padding-top: 40px;
+    justify-content: flex-start;
+  }
+
+  .heart-container {
+    margin-top: 40px;
+    transform: scale(0.85); /* Slightly smaller for mobile */
+  }
+
+  h1 {
+    margin-top: 20px;
+  }
+
+  .buttons {
+    margin-bottom: 20px;
+  }
+
+  /* Reduce floating elements so they don’t push content visually */
+  .flower-group-left,
+  .flower-group-right {
+    transform: scale(0.7);
+    top: 0;
+  }
+}
+/* Fix for Mobile Centering */
+@media (max-width: 768px) {
+  body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Move content up */
+    align-items: center;
+    padding-top: 30px; /* Space from top */
+    height: auto !important;
+    min-height: 100vh;
+  }
+
+  .heart-container {
+    margin-top: 0px; /* Pull Heart Up */
+    transform: scale(0.9); /* Slightly Smaller on Mobile */
+  }
+
+  h1 {
+    margin-top: 10px;
+    text-align: center;
+  }
+}
