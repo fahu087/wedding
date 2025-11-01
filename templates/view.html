@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>View Reports - SafeCity</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #eef2f7;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+
+    h2 {
+      color: #007bff;
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 28px;
+    }
+
+    form {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      width: 280px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    input[type="text"]:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 5px rgba(0,123,255,0.3);
+    }
+
+    button, a.button-link {
+      background-color: #007bff;
+      color: white;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    button:hover, a.button-link:hover {
+      background-color: #0056b3;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      background: white;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th {
+      background-color: #007bff;
+      color: white;
+      padding: 12px;
+    }
+
+    td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .pending {
+      color: red;
+      font-weight: bold;
+    }
+
+    .solved {
+      color: green;
+      font-weight: bold;
+    }
+
+    .thumbnail {
+      width: 100px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .thumbnail:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    .no-image {
+      color: #777;
+      font-style: italic;
+    }
+
+    /* Fullscreen popup viewer */
+    #imageModal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      justify-content: center;
+      align-items: center;
+      cursor: zoom-out;
+    }
+
+    #imageModal img {
+      max-width: 95vw;
+      max-height: 95vh;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(255,255,255,0.3);
+      transition: transform 0.3s ease;
+      cursor: grab;
+    }
+
+    #imageModal span {
+      position: absolute;
+      top: 20px;
+      right: 35px;
+      color: white;
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    #imageModal span:hover {
+      color: #ff4444;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>📋 All Reports</h2>
+
+  <!-- ✅ Search form -->
+  <form method="POST" action="/view">
+    <input type="text" name="keyword" placeholder="Search by name or location" value="{{ keyword }}">
+    <button type="submit">Search</button>
+
+    {% if keyword %}
+    <a href="/view" class="button-link" style="margin-left:10px;">Clear Search</a>
+    {% endif %}
+  </form>
+
+  <table>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Location</th>
+      <th>Description</th>
+      <th>Image</th>
+      <th>Status</th>
+      <th>Action</th>
+    </tr>
+
+    {% for report in reports %}
+    <tr>
+      <td>{{ report[0] }}</td>
+      <td>{{ report[1] }}</td>
+      <td>{{ report[2] }}</td>
+      <td>{{ report[3] }}</td>
+
+      <td>
+        {% if report[6] %}
+        <img src="{{ url_for('static', filename=report[6]) }}"
+             alt="Evidence"
+             class="thumbnail"
+             onclick='openImage("{{ url_for("static", filename=report[6]) }}")'>
+        {% else %}
+        <span class="no-image">No Image</span>
+        {% endif %}
+      </td>
+
+      <td class="{{ 'solved' if report[5] == 'Solved' else 'pending' }}">
+        {{ report[5] }}
+      </td>
+
+      <td>
+        {% if report[5] != 'Solved' %}
+        <form action="/solve/{{ report[0] }}" method="post" style="display:inline;">
+          <button type="submit" style="background-color: rgb(46, 218, 46);">Mark as Solved</button>
+        </form>
+        {% else %}
+        ✅ Solved
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <!-- 🖼️ Image Viewer Modal -->
+  <div id="imageModal" onclick="closeImage()">
+    <span>&times;</span>
+    <img id="popupImg" src="">
+  </div>
+
+  <script>
+    let zoomed = false;
+    let scale = 1;
+    let translateX = 0;
+    let translateY = 0;
+    let isDragging = false;
+    let startX, startY;
+
+    function openImage(src) {
+      const popupImg = document.getElementById("popupImg");
+      popupImg.src = src;
+      document.getElementById("imageModal").style.display = "flex";
+      document.body.style.overflow = "hidden";
+      resetTransform();
+    }
+
+    function closeImage() {
+      document.getElementById("imageModal").style.display = "none";
+      document.body.style.overflow = "auto";
+      resetTransform();
+    }
+
+    function resetTransform() {
+      scale = 1;
+      translateX = 0;
+      translateY = 0;
+      updateTransform();
+    }
+
+    function updateTransform() {
+      const img = document.getElementById("popupImg");
+      img.style.transform = `scale(${scale}) translate(${translateX}px, ${translateY}px)`;
+    }
+
+    document.getElementById("popupImg").addEventListener("click", function (event) {
+      event.stopPropagation();
+      zoomed = !zoomed;
+      scale = zoomed ? 2 : 1;
+      updateTransform();
+    });
+
+    document.getElementById("popupImg").addEventListener("mousedown", function (e) {
+      if (!zoomed) return;
+      isDragging = true;
+      startX = e.clientX - translateX;
+      startY = e.clientY - translateY;
+      this.style.cursor = "grabbing";
+    });
+
+    document.addEventListener("mousemove", function (e) {
+      if (!isDragging) return;
+      translateX = e.clientX - startX;
+      translateY = e.clientY - startY;
+      updateTransform();
+    });
+
+    document.addEventListener("mouseup", function () {
+      isDragging = false;
+      document.getElementById("popupImg").style.cursor = "grab";
+    });
+  </script>
+
+</body>
+</html>

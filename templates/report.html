@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SafeCity - Report an Incident</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Page setup */
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #007bff, #00bcd4);
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Form card */
+    .form-container {
+      background: white;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      width: 90%;
+      max-width: 420px;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    /* Heading */
+    h2 {
+      text-align: center;
+      color: #007bff;
+      margin-bottom: 15px;
+    }
+
+    /* Form fields */
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+      color: #333;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+
+    /* File input */
+    input[type="file"] {
+      border: 1px dashed #007bff;
+      background: #f9fbff;
+      cursor: pointer;
+    }
+
+    /* Submit button */
+    button {
+      background-color: #007bff;
+      color: white;
+      padding: 12px;
+      width: 100%;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    /* Location status */
+    #locationStatus {
+      font-size: 13px;
+      color: gray;
+      text-align: center;
+      margin-top: -10px;
+      margin-bottom: 10px;
+    }
+
+    /* Animation */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Report an Incident</h2>
+    <form method="POST" action="/report" enctype="multipart/form-data">
+      <label for="name">Your Name:</label>
+      <input type="text" id="name" name="name" placeholder="Enter your name" required>
+
+      <label for="location">Detected Location:</label>
+      <input type="text" id="location" name="location" readonly required>
+      <p id="locationStatus">Fetching your current location...</p>
+
+      <label for="description">Description:</label>
+      <textarea id="description" name="description" rows="3" placeholder="Describe the incident..." required></textarea>
+
+      <label for="image">Upload Photo (optional):</label>
+      <input type="file" id="image" name="image" accept="image/*" capture="environment">
+
+      <button type="submit">Submit Report</button>
+    </form>
+  </div>
+
+  <script>
+    // ✅ Auto-detect location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        function(position) {
+          const lat = position.coords.latitude.toFixed(6);
+          const lon = position.coords.longitude.toFixed(6);
+          document.getElementById('location').value = `Lat: ${lat}, Lon: ${lon}`;
+          document.getElementById('locationStatus').textContent = "✅ Location detected successfully.";
+          document.getElementById('locationStatus').style.color = "green";
+        },
+        function(error) {
+          document.getElementById('locationStatus').textContent =
+            "⚠️ Unable to fetch location. Please enable GPS or enter manually.";
+          document.getElementById('locationStatus').style.color = "red";
+          document.getElementById('location').removeAttribute('readonly');
+        }
+      );
+    } else {
+      document.getElementById('locationStatus').textContent =
+        "Geolocation not supported in this browser.";
+      document.getElementById('location').removeAttribute('readonly');
+    }
+  </script>
+</body>
+</html>
