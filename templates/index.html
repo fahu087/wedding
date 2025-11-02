@@ -3,47 +3,129 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SafeCity - Home</title>
+  <title>SafeCity - Choose Role</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f2f6fa;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #dbeafe, #eff6ff, #e0f2ff);
+      background-size: 400% 400%;
+      animation: bgMove 10s ease infinite;
+      margin: 0;
+      padding: 0;
       display: flex;
       flex-direction: column;
+      min-height: 100vh;
+      color: #333;
+    }
+
+    @keyframes bgMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    header {
+      background: linear-gradient(90deg, #007bff, #00c6ff);
+      background-size: 200% 200%;
+      animation: headerMove 5s linear infinite;
+      color: white;
+      padding: 15px 20px;
+      display: flex;
       align-items: center;
-      justify-content: center;
-      height: 100vh;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    }
+
+    @keyframes headerMove {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+
+    header h1 {
       margin: 0;
+      font-size: 24px;
+      font-weight: bold;
+      letter-spacing: 1px;
     }
-    h1 {
+
+    .content {
+      text-align: center;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 1s ease;
+      padding: 0 20px;
+    }
+
+    h2 {
       color: #007bff;
+      font-size: 30px;
+      margin-bottom: 15px;
     }
+
     p {
       font-size: 18px;
-      color: #333;
-      margin-bottom: 30px;
+      color: #444;
+      margin-bottom: 40px;
+      max-width: 600px;
+      line-height: 1.6;
     }
-    a {
-      display: inline-block;
+
+    .btn {
+      display: block;
+      width: 240px;
+      text-align: center;
       text-decoration: none;
       color: white;
-      background-color: #007bff;
-      padding: 12px 25px;
-      border-radius: 8px;
-      font-size: 16px;
-      margin: 10px;
+      background: linear-gradient(135deg, #007bff, #00a2ff);
+      padding: 14px 0;
+      border-radius: 10px;
+      font-size: 18px;
+      margin: 12px 0;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0,123,255,0.3);
     }
-    a:hover {
-      background-color: #0056b3;
+
+    .btn:hover {
+      transform: translateY(-3px) scale(1.05);
+      background: linear-gradient(135deg, #0062cc, #0090ff);
+      box-shadow: 0 8px 16px rgba(0,123,255,0.5);
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
-  <h1>Welcome to SafeCity</h1>
-  <p>Your city safety starts with awareness and quick reporting.</p>
 
-  <a href="/report">📢 Report a Crime</a>
-  <a href="/view">📋 View All Reports</a>
-  
+  <header>
+    <h1>SafeCity</h1>
+  </header>
+
+  <div class="content">
+    <h2>Welcome to SafeCity</h2>
+    <p>Empowering both citizens and police officers to build safer communities through quick and transparent reporting.</p>
+
+    <!-- Role Buttons -->
+   <a href="/citizen/login" class="btn">👤 Login as Citizen</a>
+
+
+    <a href="/police" class="btn">👮‍♂️ Login as Police</a>
+  </div>
+
+  <footer>
+    © 2025 SafeCity | Together for a Safer Tomorrow
+  </footer>
+
 </body>
 </html>

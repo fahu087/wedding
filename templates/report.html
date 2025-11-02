@@ -5,7 +5,6 @@
   <title>SafeCity - Report an Incident</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    /* Page setup */
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
       background: linear-gradient(135deg, #007bff, #00bcd4);
@@ -16,7 +15,6 @@
       align-items: center;
     }
 
-    /* Form card */
     .form-container {
       background: white;
       padding: 30px 25px;
@@ -25,16 +23,15 @@
       width: 90%;
       max-width: 420px;
       animation: fadeIn 0.5s ease-in-out;
+      position: relative;
     }
 
-    /* Heading */
     h2 {
       text-align: center;
       color: #007bff;
       margin-bottom: 15px;
     }
 
-    /* Form fields */
     label {
       font-weight: bold;
       display: block;
@@ -57,14 +54,12 @@
       outline: none;
     }
 
-    /* File input */
     input[type="file"] {
       border: 1px dashed #007bff;
       background: #f9fbff;
       cursor: pointer;
     }
 
-    /* Submit button */
     button {
       background-color: #007bff;
       color: white;
@@ -81,16 +76,34 @@
       background-color: #0056b3;
     }
 
-    /* Location status */
-    #locationStatus {
-      font-size: 13px;
-      color: gray;
-      text-align: center;
-      margin-top: -10px;
-      margin-bottom: 10px;
+    /* Suggestions box (hidden by default) */
+    #suggestions {
+      position: absolute;
+      background: #fff;
+      width: calc(100% - 50px);
+      max-height: 150px;
+      overflow-y: auto;
+      border-radius: 6px;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: none;
     }
 
-    /* Animation */
+    #suggestions.active {
+      display: block;
+      border: 1px solid #ccc;
+    }
+
+    #suggestions div {
+      padding: 8px 10px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    #suggestions div:hover {
+      background: #f0f8ff;
+    }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-10px); }
       to { opacity: 1; transform: translateY(0); }
@@ -104,43 +117,111 @@
       <label for="name">Your Name:</label>
       <input type="text" id="name" name="name" placeholder="Enter your name" required>
 
-      <label for="location">Detected Location:</label>
-      <input type="text" id="location" name="location" readonly required>
-      <p id="locationStatus">Fetching your current location...</p>
+      <label for="location"> Location:</label>
+      <input type="text" id="location" name="location" placeholder="Enter location" autocomplete="off">
+      <div id="suggestions"></div>
+
+      <button type="button" onclick="getLocation()" style="background-color: rgb(11, 159, 159);"> current Location</button>
 
       <label for="description">Description:</label>
       <textarea id="description" name="description" rows="3" placeholder="Describe the incident..." required></textarea>
 
       <label for="image">Upload Photo (optional):</label>
-      <input type="file" id="image" name="image" accept="image/*" capture="environment">
+      <input type="file" id="image" name="images" accept="image/*" multiple>
 
       <button type="submit">Submit Report</button>
     </form>
   </div>
 
   <script>
-    // ✅ Auto-detect location
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        function(position) {
-          const lat = position.coords.latitude.toFixed(6);
-          const lon = position.coords.longitude.toFixed(6);
-          document.getElementById('location').value = `Lat: ${lat}, Lon: ${lon}`;
-          document.getElementById('locationStatus').textContent = "✅ Location detected successfully.";
-          document.getElementById('locationStatus').style.color = "green";
-        },
-        function(error) {
-          document.getElementById('locationStatus').textContent =
-            "⚠️ Unable to fetch location. Please enable GPS or enter manually.";
-          document.getElementById('locationStatus').style.color = "red";
-          document.getElementById('location').removeAttribute('readonly');
-        }
-      );
-    } else {
-      document.getElementById('locationStatus').textContent =
-        "Geolocation not supported in this browser.";
-      document.getElementById('location').removeAttribute('readonly');
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
     }
+
+    function showPosition(position) {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+
+      fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+        .then(response => response.json())
+        .then(data => {
+          const address = data.address;
+          const city = address.city || address.town || address.village || "Unknown";
+          const state = address.state || "";
+          document.getElementById("location").value = `${city}, ${state}`;
+        })
+        .catch(error => {
+          console.error("Error fetching location:", error);
+          alert("Could not fetch readable location.");
+        });
+    }
+
+    function showError(error) {
+      switch(error.code) {
+        case error.PERMISSION_DENIED:
+          alert("Permission denied for location access.");
+          break;
+        case error.POSITION_UNAVAILABLE:
+          alert("Location information unavailable.");
+          break;
+        case error.TIMEOUT:
+          alert("Location request timed out.");
+          break;
+        default:
+          alert("An unknown error occurred.");
+      }
+    }
+
+    const locationInput = document.getElementById("location");
+    const suggestionsBox = document.getElementById("suggestions");
+
+    locationInput.addEventListener("input", () => {
+      const query = locationInput.value.trim();
+      if (query.length < 3) {
+        suggestionsBox.innerHTML = "";
+        suggestionsBox.classList.remove("active");
+        return;
+      }
+
+      // ✅ Restricted to India using countrycodes=IN
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&countrycodes=IN&limit=5`)
+        .then(res => res.json())
+        .then(data => {
+          suggestionsBox.innerHTML = "";
+          if (data.length === 0) {
+            suggestionsBox.classList.remove("active");
+            return;
+          }
+          data.forEach(place => {
+            const city = place.address.city || place.address.town || place.address.village || "";
+            const state = place.address.state || "";
+            const full = `${city || place.display_name.split(",")[0]}, ${state}`;
+            const div = document.createElement("div");
+            div.textContent = full;
+            div.onclick = () => {
+              locationInput.value = full;
+              suggestionsBox.innerHTML = "";
+              suggestionsBox.classList.remove("active");
+            };
+            suggestionsBox.appendChild(div);
+          });
+          suggestionsBox.classList.add("active");
+        })
+        .catch(() => {
+          suggestionsBox.classList.remove("active");
+        });
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest("#location") && !e.target.closest("#suggestions")) {
+        suggestionsBox.innerHTML = "";
+        suggestionsBox.classList.remove("active");
+      }
+    });
   </script>
 </body>
 </html>
