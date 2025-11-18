@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>SafeCity | Citizen Login</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
@@ -29,16 +29,17 @@
     }
 
     /* Header */
-    header {
-      background: linear-gradient(90deg, #002b5c, #004080);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 12px 25px;
-      width: 100%;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-    }
+   header {
+  background: linear-gradient(90deg, #002b5c, #004080);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;   /* Move to Left */
+  padding: 12px 25px;
+  width: 100%;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+  gap: 15px; /* optional spacing */
+}
 
     header img {
       height: 60px;
@@ -221,7 +222,7 @@
     <button type="submit">Login</button>
 </form>
 
-      <a href="/police" class="police-link">👮‍♂️ Login as Police</a>
+      <a href="/police" class="police-link"> Login as Police</a>
     </div>
   </div>
 

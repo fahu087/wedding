@@ -32,23 +32,18 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # ================================
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    def generate_captcha():
-        chars = string.ascii_letters + string.digits + "@#%$"
-        return ''.join(random.choice(chars) for _ in range(6))
 
-    error = None
-
+    # TEMPORARILY TURN OFF CAPTCHA COMPLETELY
     if request.method == 'POST':
         name = request.form.get('name')
         phone = request.form.get('phone')
-        entered_captcha = request.form.get('captcha', '').strip()
-        correct_captcha = session.get('captcha')
 
-        if entered_captcha != correct_captcha:
-            error = "❌ Incorrect CAPTCHA."
-        else:
-            session['citizen'] = {'name': name, 'phone': phone}
-            return redirect(url_for('citizen_home'))
+        # Direct login without checking captcha
+        session['citizen'] = {'name': name, 'phone': phone}
+        return redirect(url_for('citizen_home'))
+
+    return render_template('index.html', captcha="", error=None)
+
 
     session['captcha'] = generate_captcha()
     return render_template('index.html', captcha=session['captcha'], error=error)
@@ -72,15 +67,19 @@ def citizen_reports():
 
     citizen = session['citizen']
 
-    cursor.execute("""
+    cursor2 = db.cursor(dictionary=True)   # <-- IMPORTANT FIX
+
+    cursor2.execute("""
         SELECT id, victim_name, victim_age, victim_gender, location, description,
-               image_path, status, assigned_to, solved_by
+               image_path, status, assigned_to, solved_by, created_at
         FROM reports
         WHERE citizen_name = %s AND citizen_phone = %s
         ORDER BY id DESC
     """, (citizen['name'], citizen['phone']))
 
-    reports = cursor.fetchall()
+    reports = cursor2.fetchall()
+    cursor2.close()
+
     return render_template('citizen_reports.html', citizen=citizen, reports=reports)
 
 # ================================
@@ -183,6 +182,36 @@ def police_dashboard():
 
     return render_template('view.html', reports=reports)
 
+# ================================
+# SEARCH VIEW (ADMIN OR OFFICER)
+# ================================
+@app.route('/view', methods=['GET', 'POST'])
+def view_reports():
+    if 'police' not in session:
+        return redirect(url_for('police_login'))
+
+    keyword = ""
+
+    if request.method == 'POST':
+        keyword = request.form.get('keyword', "").strip()
+
+        cursor2 = db.cursor(dictionary=True)
+
+        cursor2.execute("""
+            SELECT * FROM reports
+            WHERE citizen_name LIKE %s 
+               OR location LIKE %s
+               OR description LIKE %s
+            ORDER BY id DESC
+        """, (f"%{keyword}%", f"%{keyword}%", f"%{keyword}%"))
+
+        reports = cursor2.fetchall()
+        cursor2.close()
+
+        return render_template("view.html", reports=reports, keyword=keyword)
+
+    # If GET request → show all
+    return redirect(url_for('police_dashboard'))
 
 
 # ================================

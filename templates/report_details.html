@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Report Details</title>
   <style>
     body {
@@ -111,13 +113,18 @@
   <div class="section">
     <div class="section-title">Incident Information</div>
     <div class="info-grid">
+     <div class="info-label">Reported On:</div>
+<div class="info-value">
+    {{ report['created_at'].strftime("%d %B %Y at %I:%M %p") }}
+</div>
+
 
       <div class="info-label">Location:</div>
       <div class="info-value">{{ report['location'] }}</div>
 
       <div class="info-label">Description:</div>
       <div class="info-value">{{ report['description'] }}</div>
-
+         
       <!-- Show only Assigned To OR Solved By -->
       {% if report['status'] == 'Solved' %}
         <div class="info-label">Solved By:</div>

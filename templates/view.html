@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>View Reports - SafeCity</title>
 
   <style>
@@ -134,6 +134,20 @@
       transform: translateY(-3px);
       background: linear-gradient(135deg, #0062cc, #0090ff);
     }
+    .small-desc {
+  max-width: 260px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  
+}
+.small-loc {
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
   </style>
 </head>
 
@@ -162,7 +176,7 @@
     <th>Action</th>
   </tr>
 
- {% for r in reports %}
+{% for r in reports %}
 <tr class="report-row" data-id="{{ r['id'] }}" style="cursor:pointer;">
 
     <td>{{ loop.index }}</td>
@@ -176,39 +190,63 @@
       </small>
     </td>
 
-    <td>{{ r['location'] }}</td>
-    <td>{{ r['description'] }}</td>
+   <td class="small-loc">{{ r['location'] }}</td>
 
-    <td class="{{ 'solved' if r['status']=='Solved' else 'pending' }}">
-      {{ r['status'] }}
-    </td>
+   <td class="small-desc">{{ r['description'] }}</td>
 
-<td onclick="event.stopPropagation();">
+   <td class="{{ 'solved' if r['status']=='Solved' else 'pending' }}">
+  {{ r['status'] }}
 
-  {% if r['status'] != 'Solved' %}
-      <!-- Solve Button -->
-      <form action="/solve/{{ r['id'] }}" method="post" style="display:inline;">
-        <button class="solve-btn" style="background:#0bb775 ; color:white;">Mark as Solved</button>
-      </form>
-
-  {% else %}
-      <!-- Delete Button Only -->
-      <form action="/delete/{{ r['id'] }}" method="post" style="display:inline;">
-        <button type="submit" class="delete-btn"
-                onclick="return confirm('Delete this report?');">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22">
-            <path d="M3 6h18v2H3V6zm2 3h14l-1.5 12.5A2 2 0 0 1 15.5 24h-7a2 2 0 0 1-1.99-2.5L5 9zm5 2v10h2V11H10zm4 0v10h2V11h-2zM9 4V2h6v2h5v2H4V4h5z"/>
-          </svg>
-        </button>
-      </form>
-  {% endif %}
-
+  
 </td>
 
 
-  </tr>
-  {% endfor %}
+    <!-- ACTION COLUMN -->
+   <td onclick="event.stopPropagation();">
+
+    {% if session.role == 'officer' %}
+        {% if r['status'] != 'Solved' %}
+            <form action="/solve/{{ r['id'] }}" method="post" style="display:inline;">
+                <button class="solve-btn" style="background:#0bb775;color:white;">
+                    Mark as Solved
+                </button>
+            </form>
+        {% endif %}
+    {% endif %}
+
+    {% if session.role == 'admin' %}
+        {% if r['status'] == 'Solved' %}
+            <!-- Admin: show DELETE button -->
+            <form action="/delete/{{ r['id'] }}" method="post" style="display:inline;">
+                <button type="submit" class="delete-btn"
+                        onclick="return confirm('Delete this report?');">
+                    <svg xmlns="http://www.w3.org/2000/svg" 
+                         viewBox="0 0 24 24" width="22" height="22">
+                        <path d="M3 6h18v2H3V6zm2 3h14l-1.5 12.5A2 2 0 0 1 15.5 24h-7a2 2 0 0 1-1.99-2.5L5 9zm5 2v10h2V11H10zm4 0v10h2V11h-2zM9 4V2h6v2h5v2H4V4h5z"/>
+                    </svg>
+                </button>
+            </form>
+
+        {% else %}
+            <!-- Admin: show Assigned / Not Assigned -->
+            {% if r['assigned_to'] %}
+                <span style="color:#0056b3; font-size:14px; font-weight:bold;">
+                    ✔ Assigned
+                </span>
+            {% else %}
+                <span style="color:#ff9800; font-size:14px; font-weight:bold;">
+                    ⚠ Not Assigned
+                </span>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+</td>
+
+
+</tr>
+{% endfor %}
 </table>
+
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".report-row").forEach(row => {

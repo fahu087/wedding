@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Reports - SafeCity</title>
   <style>
     body {
@@ -82,30 +82,55 @@
   <div class="reports-container">
     {% for report in reports %}
     <div class="report-card">
-      <h3>Victim: {{ report[1] }}</h3>
+  <h3>Victim: {{ report.victim_name }}</h3>
 
-      <div class="details">
-        <p><strong>Age:</strong> {{ report[2] }}</p>
-        <p><strong>Gender:</strong> {{ report[3] }}</p>
-        <p><strong>Location:</strong> {{ report[4] }}</p>
-        <p><strong>Description:</strong> {{ report[5] }}</p>
-        <p><strong>Assigned To:</strong> {{ report[8] or "Not Assigned" }}</p>
-<p><strong>Solved By:</strong> {{ report[9] or "Not Solved Yet" }}</p>
+  <div class="details">
+      <p><strong>Age:</strong> {{ report.victim_age }}</p>
+      <p><strong>Gender:</strong> {{ report.victim_gender }}</p>
 
-      </div>
-
-     {% if report[6] %}
-  {% set first_img = report[6].split(',')[0] %}
-  <img src="{{ url_for('static', filename=first_img.strip()) }}" alt="Incident Photo">
-{% endif %}
-
-
-      <p><strong>Status:</strong> 
-        <span class="status {% if report[7] == 'Solved' %}solved{% else %}pending{% endif %}">
-          {{ report[7] }}
-        </span>
+      <p><strong>Reported On:</strong> 
+        {{ report.created_at.strftime("%d %B %Y at %I:%M %p") }}
       </p>
-    </div>
+
+      <p><strong>Location:</strong> {{ report.location }}</p>
+
+      {% if report.status == "Solved" %}
+          <p style="padding:10px; border-radius:8px; background:#e6f9ec; color:#0a7a32; font-weight:bold;">
+              ✓ Your case has been successfully solved by 
+              <span style="color:#0a7a32; font-weight:900; background:#c3f3d0; padding:2px 6px; border-radius:6px;">
+                  Officer {{ report.solved_by or "Unknown" }}
+              </span>.
+          </p>
+      {% else %}
+          {% if report.assigned_to %}
+              <p style="padding:10px; border-radius:8px; background:#e8f4ff; color:#0056b3; font-weight:bold;">
+                  ➤ Your case is currently being handled by 
+                  <span style="color:#004aad; font-weight:900; background:#d6e9ff; padding:2px 6px; border-radius:6px;">
+                      Officer {{ report.assigned_to }}
+                  </span>.  
+                  Please stay calm — you're in safe hands.
+              </p>
+          {% else %}
+              <p style="padding:10px; border-radius:8px; background:#fff4e0; color:#b36b00; font-weight:bold;">
+                  ⚠ Your case has not been assigned yet.  
+                  Please stay patient — it will be handled soon.
+              </p>
+          {% endif %}
+      {% endif %}
+  </div>
+
+  {% if report.image_path %}
+      {% set first_img = report.image_path.split(',')[0] %}
+      <img src="{{ url_for('static', filename=first_img.strip()) }}" alt="Incident Photo">
+  {% endif %}
+
+  <p><strong>Status:</strong> 
+      <span class="status {{ 'solved' if report.status=='Solved' else 'pending' }}">
+        {{ report.status }}
+      </span>
+  </p>
+</div>
+
     {% endfor %}
   </div>
   {% else %}
