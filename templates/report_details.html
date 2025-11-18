@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Report Details</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f7f8fa;
+      margin: 0; padding: 20px;
+      color: #333;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 35px 40px;
+      border-radius: 10px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    }
+
+    h2 {
+      color: #007bff;
+      text-align: center;
+      margin-bottom: 35px;
+      font-size: 32px;
+      font-weight: 600;
+    }
+
+    .section { margin-bottom: 30px; }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #007bff;
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 5px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 10px 20px;
+    }
+
+    .info-label { font-weight: 600; color: #555; }
+    .info-value { color: #222; }
+
+    .status-solved { background:#28a745; color:white; padding:5px 12px; border-radius:10px; }
+    .status-pending { background:#ffc107; padding:5px 12px; border-radius:10px; }
+
+    .images img {
+      width: 160px;
+      height: 110px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-right: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .images img:hover { transform: scale(1.05); }
+
+    .back-btn {
+      background:#007bff; color:white; padding:12px 25px;
+      text-decoration:none; border-radius:8px; display:inline-block;
+    }
+
+    .modal {
+      display:none; position:fixed; z-index:1000; left:0; top:0;
+      width:100%; height:100%; background:rgba(0,0,0,0.8);
+    }
+    .modal-content { display:block; margin:auto; max-width:90%; max-height:80%; }
+    .close { position:absolute; right:35px; top:20px; color:white; font-size:40px; cursor:pointer; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+ <h2>Report Details #{{ serial }}</h2>
+
+  <!-- Reporter Info -->
+  <div class="section">
+    <div class="section-title">Reporter Info</div>
+    <div class="info-grid">
+      <div class="info-label">Name:</div>
+      <div class="info-value">{{ report['citizen_name'] }}</div>
+
+      <div class="info-label">Phone:</div>
+      <div class="info-value">{{ report['citizen_phone'] }}</div>
+    </div>
+  </div>
+
+  <!-- Victim Info -->
+  <div class="section">
+    <div class="section-title">Victim Info</div>
+    <div class="info-grid">
+      <div class="info-label">Name:</div>
+      <div class="info-value">{{ report['victim_name'] }}</div>
+
+      <div class="info-label">Age:</div>
+      <div class="info-value">{{ report['victim_age'] }}</div>
+
+      <div class="info-label">Gender:</div>
+      <div class="info-value">{{ report['victim_gender'] }}</div>
+    </div>
+  </div>
+
+  <!-- Incident Info (correct position) -->
+  <div class="section">
+    <div class="section-title">Incident Information</div>
+    <div class="info-grid">
+
+      <div class="info-label">Location:</div>
+      <div class="info-value">{{ report['location'] }}</div>
+
+      <div class="info-label">Description:</div>
+      <div class="info-value">{{ report['description'] }}</div>
+
+      <!-- Show only Assigned To OR Solved By -->
+      {% if report['status'] == 'Solved' %}
+        <div class="info-label">Solved By:</div>
+        <div class="info-value">{{ report['solved_by'] or "Unknown" }}</div>
+      {% else %}
+        <div class="info-label">Assigned To:</div>
+        <div class="info-value">{{ report['assigned_to'] or "Not Assigned" }}</div>
+      {% endif %}
+
+      <div class="info-label">Status:</div>
+      <div class="info-value">
+        {% if report['status'] == 'Solved' %}
+          <span class="status-solved">Solved</span>
+        {% else %}
+          <span class="status-pending">Pending</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Evidence Images -->
+  <div class="section">
+    <div class="section-title">Evidence Images</div>
+    <div class="images">
+      {% if report['image_path'] %}
+        {% for img in report['image_path'].split(',') %}
+          <img src="{{ url_for('static', filename=img.strip()) }}" onclick="openModal(this)">
+        {% endfor %}
+      {% else %}
+        <p>No Images</p>
+      {% endif %}
+    </div>
+  </div>
+
+ {% if session.role == "admin" and report['status'] != "Solved" and (not report['assigned_to'] or report['assigned_to'].strip() == "") %}
+<div class="section">
+  <div class="section-title">Assign Case</div>
+  <form method="POST" action="/assign/{{ report['id'] }}">
+      <input type="text" name="officer_name" required
+             placeholder="Enter Officer Name"
+             style="padding:10px; border-radius:6px; border:1px solid #ccc;">
+      <button type="submit"
+              style="padding:10px 20px; background:#007bff; color:white; border:none; border-radius:6px;">
+          Assign Case
+      </button>
+  </form>
+</div>
+{% endif %}
+
+
+  <a href="/police/dashboard" class="back-btn">← Back to Dashboard</a>
+</div>
+
+<!-- Lightbox Modal -->
+<div id="myModal" class="modal">
+  <span class="close" onclick="closeModal()">&times;</span>
+  <img class="modal-content" id="modalImg">
+</div>
+
+<script>
+function openModal(img) {
+  document.getElementById("myModal").style.display = "block";
+  document.getElementById("modalImg").src = img.src;
+}
+function closeModal() {
+  document.getElementById("myModal").style.display = "none";
+}
+</script>
+
+</body>
+</html>

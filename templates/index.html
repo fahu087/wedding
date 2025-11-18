@@ -2,129 +2,231 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <title>SafeCity | Citizen Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SafeCity - Choose Role</title>
   <style>
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
-      background: linear-gradient(135deg, #dbeafe, #eff6ff, #e0f2ff);
-      background-size: 400% 400%;
-      animation: bgMove 10s ease infinite;
+      background: linear-gradient(145deg, #e8f1ff, #f7faff);
       margin: 0;
       padding: 0;
+      color: #222;
       display: flex;
       flex-direction: column;
       min-height: 100vh;
-      color: #333;
+      align-items: center;
     }
 
-    @keyframes bgMove {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    /* Government Banner */
+    .govt-banner {
+      background: #0a4275;
+      color: #fff;
+      text-align: center;
+      font-size: 14px;
+      padding: 6px 0;
+      letter-spacing: 0.5px;
+      width: 100%;
     }
 
+    /* Header */
     header {
-      background: linear-gradient(90deg, #007bff, #00c6ff);
-      background-size: 200% 200%;
-      animation: headerMove 5s linear infinite;
+      background: linear-gradient(90deg, #002b5c, #004080);
       color: white;
-      padding: 15px 20px;
       display: flex;
       align-items: center;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+      justify-content: center;
+      padding: 12px 25px;
+      width: 100%;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
     }
 
-    @keyframes headerMove {
-      0% { background-position: 0% 50%; }
-      100% { background-position: 100% 50%; }
+    header img {
+      height: 60px;
+      width: 60px;
+      border-radius: 50%;
+      background-color: #fff;
+      padding: 6px;
+      border: 2px solid #ff9933;
+      margin-right: 15px;
     }
 
     header h1 {
       margin: 0;
-      font-size: 24px;
+      font-size: 22px;
       font-weight: bold;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
     }
 
     .content {
-      text-align: center;
       flex: 1;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 40px 20px;
       animation: fadeIn 1s ease;
-      padding: 0 20px;
     }
 
     h2 {
-      color: #007bff;
-      font-size: 30px;
+      color: #002b5c;
+      font-size: 28px;
       margin-bottom: 15px;
     }
 
     p {
-      font-size: 18px;
       color: #444;
-      margin-bottom: 40px;
-      max-width: 600px;
+      font-size: 17px;
+      max-width: 650px;
+      margin: 0 auto 30px;
       line-height: 1.6;
-    }
-
-    .btn {
-      display: block;
-      width: 240px;
       text-align: center;
-      text-decoration: none;
-      color: white;
-      background: linear-gradient(135deg, #007bff, #00a2ff);
-      padding: 14px 0;
-      border-radius: 10px;
-      font-size: 18px;
-      margin: 12px 0;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 12px rgba(0,123,255,0.3);
     }
 
-    .btn:hover {
-      transform: translateY(-3px) scale(1.05);
-      background: linear-gradient(135deg, #0062cc, #0090ff);
-      box-shadow: 0 8px 16px rgba(0,123,255,0.5);
+    .login-box {
+      background: white;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    input {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+      transition: border-color 0.3s;
+    }
+
+    input:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+
+    .captcha-box {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 10px 0;
+      gap: 10px;
+    }
+
+    .captcha {
+      font-family: 'Courier New', monospace;
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+      letter-spacing: 3px;
+      background: #f0f0f0;
+      padding: 8px 12px;
+      border-radius: 6px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      user-select: none;
+    }
+
+    .reload-captcha {
+      font-size: 13px;
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 95%;
+      margin-top: 10px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .error {
+      color: red;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .police-link {
+      font-size: 14px;
+      margin-top: 12px;
+      display: inline-block;
+      color: #007bff;
+      text-decoration: underline;
     }
 
     footer {
       text-align: center;
-      padding: 20px;
+      background: #0a4275;
+      color: #fff;
       font-size: 14px;
-      color: #666;
+      padding: 15px;
+      width: 100%;
+      letter-spacing: 0.4px;
     }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-10px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    @media (max-width: 480px) {
+      .login-box { padding: 20px 15px; }
+      input { width: 100%; }
+      button { width: 100%; }
+    }
+
   </style>
 </head>
 <body>
 
+  <div class="govt-banner">Government of India | Ministry of Home Affairs</div>
+
   <header>
-    <h1>SafeCity</h1>
+    <img src="https://e7.pngegg.com/pngimages/979/262/png-clipart-india-flag-logo-sarnath-lion-capital-of-ashoka-pillars-of-ashoka-varanasi-state-emblem-of-india-indian-flag-miscellaneous-mammal.png" alt="India Emblem">
+    <h1>SafeCity Portal</h1>
   </header>
 
   <div class="content">
     <h2>Welcome to SafeCity</h2>
-    <p>Empowering both citizens and police officers to build safer communities through quick and transparent reporting.</p>
+    <p>Your safety, our responsibility — together we build a secure nation</p>
 
-    <!-- Role Buttons -->
-   <a href="/citizen/login" class="btn">👤 Login as Citizen</a>
+    <div class="login-box">
+      <h2>👤 Citizen Login</h2>
+      {% if error %}
+        <div class="error">{{ error }}</div>
+      {% endif %}
+     <form method="POST" action="/">
+    <input type="text" name="name" placeholder="Enter your name" required>
+    <input type="tel" name="phone" placeholder="Enter your phone number" pattern="[0-9]{10}" required>
 
+    <div class="captcha-box">
+      <div class="captcha">{{ captcha }}</div>
+      <a href="/" class="reload-captcha">↻ Reload</a>
+    </div>
+    <input type="text" name="captcha" placeholder="Enter CAPTCHA" required>
 
-    <a href="/police" class="btn">👮‍♂️ Login as Police</a>
+    <button type="submit">Login</button>
+</form>
+
+      <a href="/police" class="police-link">👮‍♂️ Login as Police</a>
+    </div>
   </div>
 
   <footer>
-    © 2025 SafeCity | Together for a Safer Tomorrow
+    © 2025 SafeCity | An Initiative by the Ministry of Home Affairs, Government of India
   </footer>
 
 </body>

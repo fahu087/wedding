@@ -39,7 +39,7 @@
       color: #333;
     }
 
-    input, textarea {
+    input, select, textarea {
       width: 100%;
       padding: 10px;
       margin-bottom: 15px;
@@ -49,7 +49,7 @@
       transition: border-color 0.3s;
     }
 
-    input:focus, textarea:focus {
+    input:focus, textarea:focus, select:focus {
       border-color: #007bff;
       outline: none;
     }
@@ -76,7 +76,6 @@
       background-color: #0056b3;
     }
 
-    /* Suggestions box (hidden by default) */
     #suggestions {
       position: absolute;
       background: #fff;
@@ -114,14 +113,31 @@
   <div class="form-container">
     <h2>Report an Incident</h2>
     <form method="POST" action="/report" enctype="multipart/form-data">
-      <label for="name">Your Name:</label>
-      <input type="text" id="name" name="name" placeholder="Enter your name" required>
 
-      <label for="location"> Location:</label>
+    
+      
+
+      <h3 style="color:#007bff; margin-top:10px;">Victim Details</h3>
+
+      <label for="victim_name">Victim Name:</label>
+      <input type="text" id="victim_name" name="victim_name" placeholder="Enter victim's name" required>
+
+      <label for="victim_age">Victim Age:</label>
+      <input type="number" id="victim_age" name="victim_age" placeholder="Enter age" min="1" required>
+
+      <label for="victim_gender">Victim Gender:</label>
+      <select id="victim_gender" name="victim_gender" required>
+        <option value="">Select gender</option>
+        <option value="Female">Female</option>
+        <option value="Male">Male</option>
+        <option value="Other">Other</option>
+      </select>
+
+      <label for="location">Location:</label>
       <input type="text" id="location" name="location" placeholder="Enter location" autocomplete="off">
       <div id="suggestions"></div>
 
-      <button type="button" onclick="getLocation()" style="background-color: rgb(11, 159, 159);"> current Location</button>
+      <button type="button" onclick="getLocation()" style="background-color: rgb(11, 159, 159);">📍 Use Current Location</button>
 
       <label for="description">Description:</label>
       <textarea id="description" name="description" rows="3" placeholder="Describe the incident..." required></textarea>
@@ -134,11 +150,12 @@
   </div>
 
   <script>
+    // Location functions (same as before)
     function getLocation() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(showPosition, showError);
       } else {
-        alert("Geolocation is not supported by this browser.");
+        alert("Geolocation not supported.");
       }
     }
 
@@ -154,74 +171,55 @@
           const state = address.state || "";
           document.getElementById("location").value = `${city}, ${state}`;
         })
-        .catch(error => {
-          console.error("Error fetching location:", error);
-          alert("Could not fetch readable location.");
-        });
+        .catch(() => alert("Unable to fetch readable location."));
     }
 
     function showError(error) {
-      switch(error.code) {
-        case error.PERMISSION_DENIED:
-          alert("Permission denied for location access.");
-          break;
-        case error.POSITION_UNAVAILABLE:
-          alert("Location information unavailable.");
-          break;
-        case error.TIMEOUT:
-          alert("Location request timed out.");
-          break;
-        default:
-          alert("An unknown error occurred.");
-      }
+      alert("Location error: " + error.message);
     }
+    // Auto-suggest location as user types
+// Auto-suggest location within India only
+const locationInput = document.getElementById("location");
+const suggestionsBox = document.getElementById("suggestions");
 
-    const locationInput = document.getElementById("location");
-    const suggestionsBox = document.getElementById("suggestions");
+locationInput.addEventListener("input", () => {
+  const query = locationInput.value.trim();
+  if (query.length < 3) {
+    suggestionsBox.classList.remove("active");
+    return;
+  }
 
-    locationInput.addEventListener("input", () => {
-      const query = locationInput.value.trim();
-      if (query.length < 3) {
-        suggestionsBox.innerHTML = "";
+  fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=5&countrycodes=in`)
+    .then(response => response.json())
+    .then(data => {
+      suggestionsBox.innerHTML = "";
+      if (data.length === 0) {
         suggestionsBox.classList.remove("active");
         return;
       }
-
-      // ✅ Restricted to India using countrycodes=IN
-      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&countrycodes=IN&limit=5`)
-        .then(res => res.json())
-        .then(data => {
-          suggestionsBox.innerHTML = "";
-          if (data.length === 0) {
-            suggestionsBox.classList.remove("active");
-            return;
-          }
-          data.forEach(place => {
-            const city = place.address.city || place.address.town || place.address.village || "";
-            const state = place.address.state || "";
-            const full = `${city || place.display_name.split(",")[0]}, ${state}`;
-            const div = document.createElement("div");
-            div.textContent = full;
-            div.onclick = () => {
-              locationInput.value = full;
-              suggestionsBox.innerHTML = "";
-              suggestionsBox.classList.remove("active");
-            };
-            suggestionsBox.appendChild(div);
-          });
-          suggestionsBox.classList.add("active");
-        })
-        .catch(() => {
+      data.forEach(place => {
+        const suggestion = document.createElement("div");
+        suggestion.textContent = place.display_name;
+        suggestion.onclick = () => {
+          locationInput.value = place.display_name;
           suggestionsBox.classList.remove("active");
-        });
+        };
+        suggestionsBox.appendChild(suggestion);
+      });
+      suggestionsBox.classList.add("active");
+    })
+    .catch(() => {
+      suggestionsBox.classList.remove("active");
     });
+});
 
-    document.addEventListener("click", (e) => {
-      if (!e.target.closest("#location") && !e.target.closest("#suggestions")) {
-        suggestionsBox.innerHTML = "";
-        suggestionsBox.classList.remove("active");
-      }
-    });
+// Hide suggestions when clicking outside
+document.addEventListener("click", (e) => {
+  if (!suggestionsBox.contains(e.target) && e.target !== locationInput) {
+    suggestionsBox.classList.remove("active");
+  }
+});
+
   </script>
 </body>
 </html>

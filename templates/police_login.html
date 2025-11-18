@@ -3,54 +3,177 @@
 <head>
   <meta charset="UTF-8">
   <title>Police Login - SafeCity</title>
+
   <style>
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
       background: linear-gradient(135deg, #0d47a1, #1976d2);
+      height: 100vh;
+      margin: 0;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
       color: white;
     }
+
     .login-box {
       background: white;
       color: #333;
-      padding: 30px 25px;
-      border-radius: 10px;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-      width: 300px;
+      width: 370px;
+      padding: 35px 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.25);
       text-align: center;
+      transition: 0.2s ease-in-out;
     }
+
+    /* Shake Animation */
+    .shake {
+      animation: shake 0.4s ease;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(6px); }
+      100% { transform: translateX(0); }
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #0d47a1;
+      font-weight: 700;
+    }
+
     input {
-      width: 90%;
-      padding: 10px;
-      margin-bottom: 15px;
+      width: 92%;
+      padding: 12px;
+      margin: 12px 0;
+      font-size: 15px;
       border-radius: 8px;
       border: 1px solid #ccc;
+      transition: 0.2s;
     }
+
+    input:focus {
+      border-color: #1976d2;
+      box-shadow: 0 0 5px rgba(25,118,210,0.4);
+    }
+
+    /* BUTTON */
     button {
+      width: 100%;
       background: #1976d2;
       color: white;
+      padding: 12px;
       border: none;
-      padding: 10px 20px;
       border-radius: 8px;
       cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      margin-top: 10px;
       transition: 0.3s;
     }
+
     button:hover {
       background: #0d47a1;
     }
+
+    /* Radio button row */
+    .role-box {
+      margin-top: 10px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-around;
+      font-weight: 600;
+    }
+
+    .role-box label {
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    .error-text {
+      color: #d40000;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+/* Remove white highlight/focus ring */
+.role-box input[type="radio"] {
+  accent-color: #1976d2;   /* Modern browsers support this */
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+/* Remove ugly white focus outline */
+.role-box input[type="radio"]:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
   </style>
 </head>
+
 <body>
-  <div class="login-box">
-    <h2>👮 Police Login</h2>
+
+  <div class="login-box {% if error %}shake{% endif %}">
+    <h2>Police / Admin Login</h2>
+
+    {% if error %}
+      <div class="error-text">{{ error }}</div>
+    {% endif %}
+
     <form method="POST" action="/police">
-      <input type="password" name="password" placeholder="Enter password" required>
-      <button type="submit">Login</button>
-    </form>
+
+  <!-- Officer Name Field -->
+  <input type="text" name="officer_name" id="officerName"
+    placeholder="Enter officer name"
+    {% if request.form.role == 'admin' %}style="display:none;"{% endif %}
+    {% if request.form.role != 'admin' %}required{% endif %}>
+
+  <!-- Password -->
+  <input type="password" name="password" placeholder="Enter password" required>
+
+  <!-- Horizontal Radio Buttons (Moved to Bottom) -->
+  <div class="role-box">
+    <label>
+      <input type="radio" name="role" value="officer"
+        {% if request.form.role != 'admin' %}checked{% endif %}
+        onclick="toggleName(true)">
+      Officer
+    </label>
+
+    <label>
+      <input type="radio" name="role" value="admin"
+        {% if request.form.role == 'admin' %}checked{% endif %}
+        onclick="toggleName(false)">
+      Admin
+    </label>
   </div>
+
+  <!-- Login Button -->
+  <button type="submit">Login</button>
+
+</form>
+
+  </div>
+
+<script>
+function toggleName(show) {
+  const nameField = document.getElementById("officerName");
+
+  if (show) {
+    nameField.style.display = "block";
+    nameField.required = true;
+  } else {
+    nameField.style.display = "none";
+    nameField.required = false;
+  }
+}
+</script>
+
 </body>
 </html>

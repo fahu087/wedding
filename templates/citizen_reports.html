@@ -2,33 +2,38 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>My Reports</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <title>My Reports - SafeCity</title>
   <style>
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
-      background: #f4f6f8;
+      background: #eef2f7;
       margin: 0;
       padding: 20px;
     }
 
     h1 {
       text-align: center;
-      color: #333;
+      color: #007bff;
+      margin-bottom: 25px;
     }
 
     .reports-container {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: 20px;
-      margin-top: 30px;
+      margin-top: 20px;
     }
 
     .report-card {
       background: white;
+      border-radius: 15px;
       padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease;
+    }
+
+    .report-card:hover {
+      transform: translateY(-4px);
     }
 
     .report-card h3 {
@@ -36,46 +41,75 @@
       margin-top: 0;
     }
 
+    .details p {
+      margin: 6px 0;
+      color: #333;
+      font-size: 14px;
+    }
+
     .status {
       display: inline-block;
-      padding: 6px 12px;
-      border-radius: 8px;
+      padding: 6px 14px;
+      border-radius: 10px;
       color: white;
       font-weight: bold;
+      margin-top: 10px;
     }
 
-    .pending {
-      background: #ffc107;
+    .pending { background: #ffc107; }
+    .solved { background: #28a745; }
+
+    img {
+      width: 100%;
+      max-height: 180px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-top: 10px;
     }
 
-    .solved {
-      background: #28a745;
+    .no-reports {
+      text-align: center;
+      font-size: 16px;
+      color: #666;
+      margin-top: 40px;
     }
   </style>
 </head>
 <body>
-  <h1>{{ citizen.name }}'s Reports</h1>
+  <h1>{{ citizen.name }}’s Reports</h1>
 
   {% if reports %}
   <div class="reports-container">
     {% for report in reports %}
     <div class="report-card">
-      <h3>{{ report[2] }}</h3>
-      <p><strong>Location:</strong> {{ report[3] }}</p>
-      <p><strong>Description:</strong> {{ report[4] }}</p>
-      {% if report[5] %}
-      <img src="{{ url_for('static', filename=report[5]) }}" alt="Report Image" style="width:100%; border-radius:8px;">
-      {% endif %}
-      <p><strong>Status:</strong>
-        <span class="status {% if report[6] == 'Solved' %}solved{% else %}pending{% endif %}">
-          {{ report[6] }}
+      <h3>Victim: {{ report[1] }}</h3>
+
+      <div class="details">
+        <p><strong>Age:</strong> {{ report[2] }}</p>
+        <p><strong>Gender:</strong> {{ report[3] }}</p>
+        <p><strong>Location:</strong> {{ report[4] }}</p>
+        <p><strong>Description:</strong> {{ report[5] }}</p>
+        <p><strong>Assigned To:</strong> {{ report[8] or "Not Assigned" }}</p>
+<p><strong>Solved By:</strong> {{ report[9] or "Not Solved Yet" }}</p>
+
+      </div>
+
+     {% if report[6] %}
+  {% set first_img = report[6].split(',')[0] %}
+  <img src="{{ url_for('static', filename=first_img.strip()) }}" alt="Incident Photo">
+{% endif %}
+
+
+      <p><strong>Status:</strong> 
+        <span class="status {% if report[7] == 'Solved' %}solved{% else %}pending{% endif %}">
+          {{ report[7] }}
         </span>
       </p>
     </div>
     {% endfor %}
   </div>
   {% else %}
-  <p style="text-align:center;">No reports found yet.</p>
+  <p class="no-reports">No reports found yet.</p>
   {% endif %}
 </body>
 </html>

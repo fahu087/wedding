@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>View Reports - SafeCity</title>
+
   <style>
     body {
       font-family: "Segoe UI", Arial, sans-serif;
@@ -19,6 +20,7 @@
       font-size: 28px;
     }
 
+    /* search */
     form {
       text-align: center;
       margin-bottom: 20px;
@@ -53,6 +55,7 @@
       background-color: #0056b3;
     }
 
+    /* table */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -76,415 +79,146 @@
       vertical-align: middle;
     }
 
-    .pending {
-      color: red;
-      font-weight: bold;
-    }
-
-    .solved {
-      color: green;
-      font-weight: bold;
-    }
-
-    .thumbnail {
-      width: 100px;
-      height: 80px;
-      object-fit: cover;
-      border-radius: 6px;
+    tr {
       cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: background 0.2s;
     }
 
-    .thumbnail:hover {
-      transform: scale(1.2);
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    tr:hover {
+      background: #e8f1ff;
     }
 
-    .no-image {
-      color: #777;
-      font-style: italic;
+    .pending { color: red; font-weight: bold; }
+    .solved { color: green; font-weight: bold; }
+
+    .delete-btn {
+      background: #f8d7da;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      padding: 8px;
+      transition: all 0.25s ease;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+      margin-left: 6px;
     }
 
-    /* Fullscreen popup viewer */
-    #imageModal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.9);
-      justify-content: center;
-      align-items: center;
-      cursor: zoom-out;
+    .delete-btn svg {
+      fill: #dc3545;
+      transition: transform 0.2s ease, fill 0.3s ease;
     }
 
-    #imageModal img {
-      max-width: 95vw;
-      max-height: 95vh;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(255,255,255,0.3);
-      transition: transform 0.3s ease;
-      cursor: grab;
+    .delete-btn:hover {
+      background: #dc3545;
+      transform: scale(1.15);
+      box-shadow: 0 4px 12px rgba(220,53,69,0.4);
     }
 
-    #imageModal span {
-      position: absolute;
-      top: 20px;
-      right: 35px;
+    .delete-btn:hover svg {
+      fill: white;
+      transform: rotate(-10deg);
+    }
+
+    .home-btn {
+      display: inline-block;
+      margin: 20px;
+      text-decoration: none;
       color: white;
-      font-size: 40px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: color 0.3s;
+      background: linear-gradient(135deg, #007bff, #00a2ff);
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: 0.3s;
     }
 
-    #imageModal span:hover {
-      color: #ff4444;
+    .home-btn:hover {
+      transform: translateY(-3px);
+      background: linear-gradient(135deg, #0062cc, #0090ff);
     }
-  
-/* ✳️ General Button Base Style */
-button, .button-link {
-  font-family: "Segoe UI", Arial, sans-serif;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  border-radius: 8px;
-  padding: 8px 15px;
-  transition: all 0.25s ease;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
-
-/* 🌿 Mark as Solved Button */
-button[type="submit"][style*="background-color: rgb(11, 183, 117)"],
-.solve-btn {
-  background: linear-gradient(135deg, #28a745, #20c997);
-  color: white;
-  border-radius: 8px;
-}
-
-button[type="submit"][style*="background-color: rgb(11, 183, 117)"]:hover,
-.solve-btn:hover {
-  background: linear-gradient(135deg, #218838, #17a2b8);
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(40,167,69,0.4);
-}
-
-/* 🗑️ Delete Button — Red Circular Icon */
-.delete-btn {
-  background: #f8d7da;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  padding: 8px;
-  transition: all 0.25s ease;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-  margin-left: 6px;
-}
-
-.delete-btn svg {
-  fill: #dc3545;
-  transition: transform 0.2s ease, fill 0.3s ease;
-}
-
-.delete-btn:hover {
-  background: #dc3545;
-  transform: scale(1.15);
-  box-shadow: 0 4px 12px rgba(220,53,69,0.4);
-}
-
-.delete-btn:hover svg {
-  fill: white;
-  transform: rotate(-10deg);
-}
-
-.delete-btn:active {
-  transform: scale(0.9);
-  box-shadow: none;
-}
-
-.thumbnail {
-  width: 100px;
-  height: 80px;
-  object-fit: cover;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  margin: 5px; /* ✳️ Add this line */
-  td:nth-child(5) {
-  max-width: 400px;
-  white-space: nowrap;
-  overflow-x: auto;
-  display: flex;
-  justify-content: center;
-}
-
-}
-
-.short-text {
-  position: relative;
-  max-width: 200px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  cursor: default;
-}
-
-/* Tooltip on hover */
-.short-text:hover::after {
-  content: attr(data-full);
-  position: absolute;
-  left: 0;
-  top: 100%;
-  white-space: normal;
-  background: #fff;
-  color: #333;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 10px 12px;
-  width: 300px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  z-index: 10;
-  transform: translateY(5px);
-}
-
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-th, td {
-  padding: 12px 15px;
-  border-bottom: 1px solid #ddd; /* 👈 adds the separation line */
-  text-align: left;
-}
-
-tr:last-child td {
-  border-bottom: none; /* no line after last row */
-} 
-.home-btn {
-  display: inline-block;
-  margin: 20px;
-  text-decoration: none;
-  color: white;
-  background: linear-gradient(135deg, #007bff, #00a2ff);
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-size: 16px;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 10px rgba(0,123,255,0.3);
-}
-
-.home-btn:hover {
-  transform: translateY(-3px);
-  background: linear-gradient(135deg, #0062cc, #0090ff);
-  box-shadow: 0 6px 14px rgba(0,123,255,0.5);
-  /* 🔍 Popup for showing full text */
-#textPopup {
-  display: none;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: white;
-  color: #333;
-  padding: 20px 25px;
-  border-radius: 10px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-  z-index: 2000;
-  max-width: 90%;
-  max-height: 70vh;
-  overflow-y: auto;
-  font-size: 16px;
-}
-
-#textPopup button {
-  background: #007bff;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 10px;
-  transition: 0.2s;
-}
-
-#textPopup button:hover {
-  background: #0056b3;
-}
-
-}
-
   </style>
 </head>
+
 <body>
+
 <a href="/" class="home-btn">🏠 Home</a>
 
-  <h2>📋 All Reports</h2>
+<h2>📋 All Reports</h2>
 
-  <!-- ✅ Search form -->
-  <form method="POST" action="/view">
-    <input type="text" name="keyword" placeholder="Search by name or location" value="{{ keyword }}">
-    <button type="submit">Search</button>
+<form method="POST" action="/view">
+  <input type="text" name="keyword" placeholder="Search by name or location" value="{{ keyword }}">
+  <button type="submit">Search</button>
 
-    {% if keyword %}
-    <a href="/view" class="button-link" style="margin-left:10px;">Clear Search</a>
-    {% endif %}
-  </form>
-
-  <table>
-    <tr>
-      <th>ID</th>
-      <th>Name</th>
-      <th>Location</th>
-      <th>Description</th>
-      <th>Image</th>
-      <th>Status</th>
-      <th>Action</th>
-    </tr>
-
-    {% for report in reports %}
-    <tr>
-      <td>{{ loop.index }}</td>
-
-      <td>{{ report[1] }}</td>
-     <td class="short-text" data-full="{{ report[2] }}">{{ report[2] }}</td>
-
-
-      <td>{{ report[3] }}</td>
-
-      <td>
-       {% if report[6] %}
-  {% for img in report[6].split(',') %}
-    <img src="{{ url_for('static', filename=img.strip()) }}"
-         alt="Evidence"
-         class="thumbnail"
-         onclick="openImage('{{ url_for('static', filename=img.strip()) }}')">
-  {% endfor %}
-{% else %}
-  <span class="no-image">No Image</span>
-{% endif %}
-
-      </td>
-
-      <td class="{{ 'solved' if report[5] == 'Solved' else 'pending' }}">
-        {{ report[5] }}
-      </td>
-<td>
-  {% if report[5] != 'Solved' %}
-    <!-- Show only Mark as Solved button -->
-    <form action="/solve/{{ report[0] }}" method="post" style="display:inline;">
-      <button type="submit" style="background-color: rgb(11, 183, 117);">
-        Mark as Solved
-      </button>
-    </form>
-  {% else %}
-    <!-- Show Solved label and Delete button -->
-    <span class="solved">✅ Solved</span>
-  <form action="/delete/{{ report[0] }}" method="post" style="display:inline;">
-  <button type="submit"
-    onclick="return confirm('Are you sure you want to permanently delete this report?');"
-    class="delete-btn"
-    title="Delete Report">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22">
-      <path d="M3 6h18v2H3V6zm2 3h14l-1.5 12.5A2 2 0 0 1 15.5 24h-7a2 2 0 0 1-1.99-2.5L5 9zm5 2v10h2V11H10zm4 0v10h2V11h-2zM9 4V2h6v2h5v2H4V4h5z"/>
-    </svg>
-  </button>
+  {% if keyword %}
+  <a href="/view" class="button-link" style="margin-left:10px;">Clear Search</a>
+  {% endif %}
 </form>
 
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Reporter Info</th>
+    <th>Location</th>
+    <th>Description</th>
+    <th>Status</th>
+    <th>Action</th>
+  </tr>
 
+ {% for r in reports %}
+<tr class="report-row" data-id="{{ r['id'] }}" style="cursor:pointer;">
 
+    <td>{{ loop.index }}</td>
+
+    <td>
+      {{ r['citizen_name'] or 'No Reporter' }}<br>
+      <small>
+        {% if r['citizen_phone'] %}
+          Phone: {{ r['citizen_phone'] }}
+        {% endif %}
+      </small>
+    </td>
+
+    <td>{{ r['location'] }}</td>
+    <td>{{ r['description'] }}</td>
+
+    <td class="{{ 'solved' if r['status']=='Solved' else 'pending' }}">
+      {{ r['status'] }}
+    </td>
+
+<td onclick="event.stopPropagation();">
+
+  {% if r['status'] != 'Solved' %}
+      <!-- Solve Button -->
+      <form action="/solve/{{ r['id'] }}" method="post" style="display:inline;">
+        <button class="solve-btn" style="background:#0bb775 ; color:white;">Mark as Solved</button>
+      </form>
+
+  {% else %}
+      <!-- Delete Button Only -->
+      <form action="/delete/{{ r['id'] }}" method="post" style="display:inline;">
+        <button type="submit" class="delete-btn"
+                onclick="return confirm('Delete this report?');">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22">
+            <path d="M3 6h18v2H3V6zm2 3h14l-1.5 12.5A2 2 0 0 1 15.5 24h-7a2 2 0 0 1-1.99-2.5L5 9zm5 2v10h2V11H10zm4 0v10h2V11h-2zM9 4V2h6v2h5v2H4V4h5z"/>
+          </svg>
+        </button>
+      </form>
   {% endif %}
+
 </td>
 
 
-    </tr>
-    {% endfor %}
-  </table>
-
-  <!-- 🖼️ Image Viewer Modal -->
-  <div id="imageModal">
-
-    <span>&times;</span>
-    <img id="popupImg" src="">
-  </div>
-
-
-  <script>
-  let zoomed = false;
-  let scale = 1;
-  let translateX = 0;
-  let translateY = 0;
-  let isDragging = false;
-  let startX, startY;
-
-  function openImage(src) {
-    const popupImg = document.getElementById("popupImg");
-    popupImg.src = src;
-    document.getElementById("imageModal").style.display = "flex";
-    document.body.style.overflow = "hidden";
-    resetTransform();
-  }
-
-  function closeImage() {
-    document.getElementById("imageModal").style.display = "none";
-    document.body.style.overflow = "auto";
-    resetTransform();
-  }
-
-  function resetTransform() {
-    scale = 1;
-    translateX = 0;
-    translateY = 0;
-    updateTransform();
-  }
-
-  function updateTransform() {
-    const img = document.getElementById("popupImg");
-    img.style.transform =
-      "scale(" + scale + ") translate(" + translateX + "px, " + translateY + "px)";
-  }
-
-  document.getElementById("popupImg").addEventListener("click", function (event) {
-    event.stopPropagation();
-    zoomed = !zoomed;
-    scale = zoomed ? 2 : 1;
-    updateTransform();
-  });
-
-  document.getElementById("popupImg").addEventListener("mousedown", function (e) {
-    if (!zoomed) return;
-    isDragging = true;
-    startX = e.clientX - translateX;
-    startY = e.clientY - translateY;
-    this.style.cursor = "grabbing";
-  });
-
-  document.addEventListener("mousemove", function (e) {
-    if (!isDragging) return;
-    translateX = e.clientX - startX;
-    translateY = e.clientY - startY;
-    updateTransform();
-  });
-
-  document.addEventListener("mouseup", function () {
-    isDragging = false;
-    document.getElementById("popupImg").style.cursor = "grab";
-  });
-
-  document.getElementById("imageModal").addEventListener("click", function (e) {
-    if (e.target.id === "imageModal" || e.target.tagName === "SPAN") {
-      closeImage();
-    }
-  });
-  
+  </tr>
+  {% endfor %}
+</table>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".report-row").forEach(row => {
+        row.addEventListener("click", () => {
+            window.location = "/report/" + row.dataset.id;
+        });
+    });
+});
 </script>
+
 
 </body>
 </html>
